@@ -5,8 +5,18 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Leaf, Droplet, CupSoda, Box } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+// ✅ Define Product type
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  category: string;
+  img: string;
+  desc?: string; // optional for some collections
+}
+
 // 🌟 Base Collection
-const products = [
+const products: Product[] = [
   {
     id: 1,
     name: "Skywalker OG",
@@ -38,7 +48,7 @@ const products = [
 ];
 
 // 🌿 Flower Collection
-const flowerProducts = [
+const flowerProducts: Product[] = [
   {
     id: 101,
     name: "Kush High Mix",
@@ -82,7 +92,7 @@ const flowerProducts = [
 ];
 
 // 🧢 Accessories Collection
-const accessoriesProducts = [
+const accessoriesProducts: Product[] = [
   {
     id: 201,
     name: "BackWood",
@@ -240,7 +250,7 @@ export default function CollectionPage() {
 
   return (
     <section className="relative min-h-screen pt-40 pb-24 px-6 md:px-12 bg-[#0a0a0a] text-[#fefce8] overflow-hidden">
-      {/* Glowing particles */}
+      {/* ✨ Glowing particles */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         {particles.map((p, i) => (
           <motion.span
