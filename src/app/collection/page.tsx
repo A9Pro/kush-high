@@ -54,7 +54,7 @@ const flowerProducts: Product[] = [
     name: "Kush High Mix",
     price: 12000,
     category: "flower",
-    img: "/collection/Kush High mix.jpg",
+    img: "/collection/KushHighmix.jpg",
     desc: "A balanced hybrid delivering a smooth euphoric high — crafted for those who love full flavor and mellow vibes.",
   },
   {
@@ -62,7 +62,7 @@ const flowerProducts: Product[] = [
     name: "OG Kush",
     price: 15000,
     category: "flower",
-    img: "/collection/OG Kush.jpg",
+    img: "/collection/OGKush.jpg",
     desc: "The classic king of strains. Deep relaxation, pine aroma, and rich potency make it a timeless favorite.",
   },
   {
@@ -78,7 +78,7 @@ const flowerProducts: Product[] = [
     name: "Black Widow",
     price: 14000,
     category: "flower",
-    img: "/collection/Black widow.jpg",
+    img: "/collection/Blackwidow.jpg",
     desc: "Intense and bold. A powerful hybrid with smooth smoke, known for its energizing yet mellow after-effect.",
   },
   {
@@ -86,7 +86,7 @@ const flowerProducts: Product[] = [
     name: "Canadian Blaze",
     price: 16000,
     category: "flower",
-    img: "/collection/Canadian blaze.jpg",
+    img: "/collection/Canadianblaze.jpg",
     desc: "Imported premium sativa — crisp citrus tones and uplifting high perfect for daytime adventures.",
   },
 ];
@@ -106,7 +106,7 @@ const accessoriesProducts: Product[] = [
     name: "Strawberry Fusion",
     price: 7500,
     category: "accessories",
-    img: "/collection/Strawberry Fusion.jpg",
+    img: "/collection/StrawberryFusion.jpg",
     desc: "Tobacco-free herbal wrap infused with strawberry essence — smooth, sweet, and 100% natural.",
   },
   {
@@ -138,7 +138,7 @@ const accessoriesProducts: Product[] = [
     name: "Kush High Mix Crusher",
     price: 11000,
     category: "accessories",
-    img: "/collection/Kush High MIx crusher.jpg",
+    img: "/collection/KushHighMIxcrusher.jpg",
     desc: "Signature Kush High Mix crusher — available in plastic or iron. Sturdy, sleek, and built for daily use.",
   },
   {
@@ -146,7 +146,7 @@ const accessoriesProducts: Product[] = [
     name: "Brown Rizla",
     price: 5500,
     category: "accessories",
-    img: "/collection/Brown Rizla.jpg",
+    img: "/collection/BrownRizla.jpg",
     desc: "Classic brown Rizla pack — unbleached rolling papers offering a clean, natural taste.",
   },
   {
@@ -154,7 +154,7 @@ const accessoriesProducts: Product[] = [
     name: "Brown Flavoured Rizla",
     price: 6500,
     category: "accessories",
-    img: "/collection/Brown flavoured Rizla.jpg",
+    img: "/collection/BrownflavouredRizla.jpg",
     desc: "Flavoured Rizla pack with subtle sweet notes — for those who prefer a hint of taste with their roll.",
   },
   {
@@ -162,7 +162,7 @@ const accessoriesProducts: Product[] = [
     name: "Beach Lighter",
     price: 7000,
     category: "accessories",
-    img: "/collection/Beach lighter.jpg",
+    img: "/collection/Beachlighter.jpg",
     desc: "Stylish lighter with beach-inspired design — refillable and windproof for reliable use anywhere.",
   },
   {
@@ -170,7 +170,7 @@ const accessoriesProducts: Product[] = [
     name: "Gun Lighter",
     price: 9000,
     category: "accessories",
-    img: "/collection/Gun lighter.jpg",
+    img: "/collection/Gunlighter.jpg",
     desc: "Creative firearm-shaped lighter — unique collectible piece with powerful flame and durable build.",
   },
   {
@@ -178,7 +178,7 @@ const accessoriesProducts: Product[] = [
     name: "Gas Lighter",
     price: 6500,
     category: "accessories",
-    img: "/collection/Gas Lighter.jpg",
+    img: "/collection/GasLighter.jpg",
     desc: "Refillable gas lighter — dependable ignition and long-lasting flame for consistent daily use.",
   },
   {
@@ -186,7 +186,7 @@ const accessoriesProducts: Product[] = [
     name: "Kush High Lighter",
     price: 8000,
     category: "accessories",
-    img: "/collection/Kush high Lighter.jpg",
+    img: "/collection/KushhighLighter.jpg",
     desc: "Custom Kush High branded lighter — sleek matte finish with powerful jet flame for instant ignition.",
   },
   {
@@ -202,7 +202,7 @@ const accessoriesProducts: Product[] = [
     name: "Kush High Tray",
     price: 11000,
     category: "accessories",
-    img: "/collection/Kush High Tray.jpg",
+    img: "/collection/KushHighTray.jpg",
     desc: "Exclusive Kush High rolling tray — sleek, durable, and perfectly sized for stylish rolling.",
   },
   {
@@ -210,7 +210,7 @@ const accessoriesProducts: Product[] = [
     name: "Kush High Container",
     price: 10000,
     category: "accessories",
-    img: "/collection/Kush High Container.jpg",
+    img: "/collection/KushHighContainer.jpg",
     desc: "Airtight Kush High container — keeps herbs fresh, discreet, and protected from moisture.",
   },
 ];
