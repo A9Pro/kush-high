@@ -70,7 +70,7 @@ const flowerProducts: Product[] = [
     name: "Purple Blaze",
     price: 13500,
     category: "flower",
-    img: "/collection/Purpleblaze.jpg",
+    img: "/collection/purpleblaze.jpg",
     desc: "A visually stunning purple bud with fruity notes — delivers uplifting calm and a creative high.",
   },
   {
@@ -98,7 +98,7 @@ const accessoriesProducts: Product[] = [
     name: "BackWood",
     price: 8500,
     category: "accessories",
-    img: "/collection/BackWood.jpg",
+    img: "/collection/Backwood.jpg",
     desc: "Authentic Backwood cigar pack — rich, natural tobacco leaf wraps that deliver a slow and flavorful burn.",
   },
   {
