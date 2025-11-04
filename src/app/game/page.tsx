@@ -153,7 +153,7 @@ export default function GameHub() {
     transition: {
       duration: 0.5,
       delay: i * 0.1,
-      ease: "easeOut", // Change to string
+      ease: [0.6, 0.05, 0.01, 0.9] as const, // Add 'as const' to fix the type error
     },
   }),
 };
