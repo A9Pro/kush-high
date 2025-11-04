@@ -145,18 +145,18 @@ export default function GameHub() {
 
   // Staggered animation variants for cards
   const cardVariants = {
-    hidden: { opacity: 0, y: 30, scale: 0.9 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        duration: 0.6,
-        delay: i * 0.15,
-        ease: [0.22, 1, 0.36, 1],
-      },
-    }),
-  };
+  hidden: { opacity: 0, y: 20, scale: 0.95 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.5,
+      delay: i * 0.1,
+      ease: "easeOut", // Change to string
+    },
+  }),
+};
 
   // Global hover variant
   const hoverVariants = {
