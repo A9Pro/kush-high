@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, // set this in your .env.local
-});
+// Remove the module-level initialization and move it inside the handler
+// This ensures it only runs when the API is actually called, not during build
 
 export async function POST(req: Request) {
   const { message } = await req.json();
@@ -11,6 +10,11 @@ export async function POST(req: Request) {
   if (!message) {
     return NextResponse.json({ error: "No message provided" }, { status: 400 });
   }
+
+  // Initialize OpenAI client inside the handler
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
 
   try {
     const completion = await openai.chat.completions.create({
