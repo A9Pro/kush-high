@@ -1,12 +1,60 @@
 "use client";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Loader2, Mic, Globe, Volume2, VolumeX, ImagePlus, Camera, X } from "lucide-react"; 
+import { Send, Loader2, Mic, Globe, Volume2, VolumeX, ImagePlus, Camera, X } from "lucide-react";
+
+// Add type declarations for Web Speech API
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
+
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList;
+  resultIndex: number;
+}
+
+interface SpeechRecognitionResultList {
+  length: number;
+  item(index: number): SpeechRecognitionResult;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  isFinal: boolean;
+  length: number;
+  item(index: number): SpeechRecognitionAlternative;
+  [index: number]: SpeechRecognitionAlternative;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+  message: string;
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  maxAlternatives: number;
+  onresult: (event: SpeechRecognitionEvent) => void;
+  onerror: (event: SpeechRecognitionErrorEvent) => void;
+  onend: () => void;
+  start: () => void;
+  stop: () => void;
+}
 
 interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
-  image?: string; 
+  image?: string;
   timestamp: Date;
 }
 
@@ -33,7 +81,7 @@ export default function KushAIConsultation() {
     {
       id: crypto.randomUUID(),
       role: "assistant",
-      content: "🌿 Yo! I’m KushAI — your mellow guide. What’s on your mind today?",
+      content: "🌿 Yo! I'm KushAI — your mellow guide. What's on your mind today?",
       timestamp: new Date(),
     },
   ]);
@@ -131,7 +179,6 @@ export default function KushAIConsultation() {
       const preview = URL.createObjectURL(file);
       setImagePreview(preview);
     }
-    // Reset input value to allow re-selection of same file
     target.value = '';
   }, []);
 
@@ -155,7 +202,6 @@ export default function KushAIConsultation() {
       const preview = URL.createObjectURL(file);
       setImagePreview(preview);
     }
-    // Reset input value
     target.value = '';
   }, []);
 
@@ -178,17 +224,14 @@ export default function KushAIConsultation() {
     if (cameraInputRef.current) cameraInputRef.current.value = '';
   }, []);
 
-  // Auto-focus input on mount
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
-  // Scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Update recognition lang
   useEffect(() => {
     if (recognitionRef.current) {
       recognitionRef.current.lang = selectedLang.code;
@@ -380,7 +423,7 @@ export default function KushAIConsultation() {
       {
         id: crypto.randomUUID(),
         role: "assistant",
-        content: "🌿 Fresh start! What’s on your mind now?",
+        content: "🌿 Fresh start! What's on your mind now?",
         timestamp: new Date(),
       },
     ]);
@@ -392,7 +435,7 @@ export default function KushAIConsultation() {
     if (cameraInputRef.current) cameraInputRef.current.value = '';
     inputRef.current?.focus();
     if (ttsEnabled) {
-      speak("Fresh start! What’s on your mind now?", selectedLang.code);
+      speak("Fresh start! What's on your mind now?", selectedLang.code);
     }
   }, [ttsEnabled, selectedLang.code, speak]);
 
@@ -404,14 +447,12 @@ export default function KushAIConsultation() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-black to-zinc-900 text-white flex flex-col items-center justify-center p-2 sm:p-4 relative overflow-hidden">
-      {/* Subtle background animation */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_80%,rgba(34,197,94,0.3),transparent_50%)]"></div>
         <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_80%_20%,rgba(34,197,94,0.3),transparent_50%)]"></div>
       </div>
 
       <div className="max-w-md sm:max-w-2xl w-full bg-zinc-800/60 backdrop-blur-xl rounded-3xl shadow-2xl p-4 sm:p-6 border border-zinc-600/50 relative z-10">
-        {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-2 sm:gap-3">
           <div className="flex items-center gap-3 flex-1">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-500 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
@@ -457,7 +498,6 @@ export default function KushAIConsultation() {
           </div>
         </div>
 
-        {/* TTS Status Indicator */}
         {isSpeaking && (
           <div className="flex items-center justify-center mb-2 gap-2 text-sm text-green-400">
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -465,7 +505,6 @@ export default function KushAIConsultation() {
           </div>
         )}
 
-        {/* Messages Container */}
         <div
           className="h-[50vh] sm:h-[60vh] overflow-y-auto mb-4 sm:mb-6 space-y-3 sm:space-y-4 pr-1 sm:pr-2 scrollbar-thin scrollbar-thumb-zinc-600 scrollbar-track-zinc-900"
           aria-live="polite"
@@ -532,10 +571,8 @@ export default function KushAIConsultation() {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Form */}
         <form onSubmit={sendMessage} className="flex flex-col sm:flex-row gap-2 sm:gap-3" role="search">
           <div className="flex flex-1 gap-1 sm:gap-2">
-            {/* Image Preview */}
             {imagePreview && (
               <div className="relative flex-1 bg-zinc-700/50 rounded-2xl overflow-hidden">
                 <img src={imagePreview} alt="Preview" className="w-full h-24 object-cover" />
@@ -549,7 +586,6 @@ export default function KushAIConsultation() {
                 </button>
               </div>
             )}
-            {/* Text Input */}
             <div className="flex flex-1 gap-1 sm:gap-2 relative">
               <input
                 ref={inputRef}
@@ -581,7 +617,6 @@ export default function KushAIConsultation() {
                 <Mic className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
-            {/* Gallery Upload Button */}
             <label className="flex items-center justify-center p-2 sm:p-3 bg-zinc-700/70 hover:bg-zinc-600/70 rounded-2xl text-zinc-400 hover:text-white transition-colors cursor-pointer disabled:opacity-50" htmlFor="gallery-upload">
               <ImagePlus className="w-4 h-4 sm:w-5 sm:h-5" />
               <input
@@ -593,7 +628,6 @@ export default function KushAIConsultation() {
                 disabled={isLoading}
               />
             </label>
-            {/* Camera Capture Button */}
             <label className="flex items-center justify-center p-2 sm:p-3 bg-zinc-700/70 hover:bg-zinc-600/70 rounded-2xl text-zinc-400 hover:text-white transition-colors cursor-pointer disabled:opacity-50" htmlFor="camera-capture">
               <Camera className="w-4 h-4 sm:w-5 sm:h-5" />
               <input
@@ -622,7 +656,6 @@ export default function KushAIConsultation() {
         </form>
       </div>
 
-      {/* Custom Scrollbar Styles */}
       <style jsx>{`
         .scrollbar-thin::-webkit-scrollbar {
           width: 4px;
