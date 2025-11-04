@@ -148,16 +148,11 @@ export default function KushAIConsultation() {
     }
   }, [selectedLang.code, CONFIDENCE_THRESHOLD]);
 
-  // Speech Synthesis setup
+  // Speech Synthesis setup - load voices
   useEffect(() => {
     if ('speechSynthesis' in window) {
-      const synth = window.speechSynthesis;
-      synth.onvoiceschanged = () => {};
-      synth.onend = () => setIsSpeaking(false);
-      synth.onerror = (event) => {
-        console.error('Speech synthesis error:', event);
-        setIsSpeaking(false);
-      };
+      // Trigger voice loading
+      window.speechSynthesis.getVoices();
     }
   }, []);
 
