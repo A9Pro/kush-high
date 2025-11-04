@@ -160,11 +160,11 @@ export default function GameHub() {
 
   // Global hover variant
   const hoverVariants = {
-    hover: {
-      y: -10,
-      transition: { type: "spring", stiffness: 300, damping: 20 },
-    },
-  };
+  hover: {
+    y: -10,
+    transition: { type: "spring" as const, stiffness: 300, damping: 20 },
+  },
+};
 
   // Play sound function
   const playSound = (soundPath: string) => {
@@ -292,7 +292,10 @@ export default function GameHub() {
             initial="hidden"
             animate="visible"
             custom={i}
-            whileHover={hoverVariants.hover}
+            whileHover={{ 
+  y: -10,
+  transition: { type: "spring" as const, stiffness: 300, damping: 20 }
+}}
             whileTap={{ 
               scale: 0.96, 
               rotate: -1,
