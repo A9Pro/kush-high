@@ -10,7 +10,7 @@ import {
   Info,
   ShoppingCart,
 } from "lucide-react";
-import { useCart } from "@/components/context/CartContext";
+import { useCart } from "@/context/CartContext";
 
 const navItems = [
   { name: "Home", href: "/", icon: Home },
@@ -21,8 +21,8 @@ const navItems = [
 ];
 
 export default function FloatingNav() {
-  const { cart } = useCart();
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const { items } = useCart();
+const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <motion.nav

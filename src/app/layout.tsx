@@ -1,9 +1,8 @@
-// app/layout.tsx
 import "./globals.css";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import FloatingNav from "@/components/FloatingNav";
-import { CartProvider } from "@/components/context/CartContext";
+import { CartProvider } from "@/context/CartContext";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -12,7 +11,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Kush High | Nigeria’s Legit Marijuana & Accessories Plug 🌿",
+  title: "Kush High | Nigeria's Legit Marijuana & Accessories Plug 🌿",
   description:
     "Shop premium marijuana strains and smoking accessories in Nigeria. Fast, discreet, nationwide delivery.",
   keywords: [
@@ -20,6 +19,8 @@ export const metadata: Metadata = {
     "Marijuana Nigeria",
     "Weed accessories",
     "Cannabis store",
+    "Nigeria weed shop",
+    "420 Nigeria",
   ],
 };
 
