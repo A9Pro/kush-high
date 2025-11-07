@@ -192,10 +192,6 @@ export default function CheckoutPage() {
                   <div className="w-2 h-2 bg-[#22c55e] rounded-full mt-2"></div>
                   <p className="text-sm text-gray-400">Direct bank transfer option</p>
                 </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-[#22c55e] rounded-full mt-2"></div>
-                  <p className="text-sm text-gray-400">Cash on delivery available</p>
-                </div>
               </div>
 
               <button
