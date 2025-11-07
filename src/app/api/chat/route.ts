@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     const { message, image } = await req.json();
 
     if (!message && !image) {
-      return NextResponse.json({ error: 'No vibe shared, dude— what's up? 🌿' }, { status: 400 });
+      return NextResponse.json({ error: 'No vibe shared, dude— what\'s up? 🌿' }, { status: 400 });
     }
 
     // Stoner-ify the input for image
@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error('Sesh error:', error);
-    const fallback = 'Whoops, the high glitched—breathe deep and try again? 🌿 What’s sparking your mind?';
+    const fallback = 'Whoops, the high glitched—breathe deep and try again? 🌿 What\'s sparking your mind?';
     return new NextResponse(fallback, {
       headers: { 'Content-Type': 'text/plain; charset=utf-8' },
     });
