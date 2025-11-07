@@ -3,7 +3,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { ShoppingBag, Leaf, Package, Sparkles, Truck, Menu, Zap } from "lucide-react";
-import { Button } from "@/components/ui/button"; // Assuming you have a Button component
 
 // --- Configuration Data ---
 
@@ -14,14 +13,16 @@ const images = [
   "/hero-bg4.jpg",
 ];
 
-// Generate random particle properties (unchanged - good effect!)
-const particles = Array.from({ length: 25 }).map(() => ({
-  x: Math.random() * 100,
-  y: Math.random() * 100,
-  size: Math.random() * 3 + 1, // Slightly smaller size for better "aura"
-  duration: Math.random() * 8 + 6,
-  delay: Math.random() * 5,
-}));
+// Function to generate particles (moved from module level)
+const generateParticles = () => {
+  return Array.from({ length: 25 }).map(() => ({
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: Math.random() * 3 + 1,
+    duration: Math.random() * 8 + 6,
+    delay: Math.random() * 5,
+  }));
+};
 
 // --- New Floating CTA Buttons Component ---
 
@@ -39,12 +40,10 @@ const FloatingCTAButtons = () => {
           key={index}
           href={btn.href}
           className="relative block"
-          // Continuous floating animation
           animate={{ y: btn.move }}
           transition={{ repeat: Infinity, duration: btn.duration, ease: "easeInOut", repeatType: "reverse" }}
         >
           <motion.div
-            // Button visual enhancements for "floating" and "aerodynamic" look
             className={`w-24 h-24 rounded-full flex flex-col items-center justify-center p-2 text-white ${btn.bgColor} shadow-2xl shadow-current/50 backdrop-blur-sm cursor-pointer border border-white/20`}
             whileHover={{ scale: 1.08, boxShadow: `0 0 35px ${btn.bgColor.replace(/bg-/, '').replace(/\/90/, '')}` }}
             whileTap={{ scale: 0.95 }}
@@ -58,11 +57,18 @@ const FloatingCTAButtons = () => {
   );
 };
 
-
 // --- Main Component ---
 
 export default function HeroSection() {
   const [index, setIndex] = useState(0);
+  const [particles, setParticles] = useState<Array<{ x: number; y: number; size: number; duration: number; delay: number }>>([]);
+  const [mounted, setMounted] = useState(false);
+
+  // Generate particles only on client side after mount
+  useEffect(() => {
+    setParticles(generateParticles());
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -81,7 +87,7 @@ export default function HeroSection() {
             initial={{ opacity: 0, scale: 1.05 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.98 }}
-            transition={{ duration: 1.5, ease: "easeInOut" }} // Slower transition for premium feel
+            transition={{ duration: 1.5, ease: "easeInOut" }}
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: `url(${images[index]})` }}
           />
@@ -89,10 +95,10 @@ export default function HeroSection() {
 
         {/* Ambient Gradient Overlays & Transparency Enhancement */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/20 to-black/80" />
-        <div className="absolute inset-0 backdrop-blur-[6px]" /> {/* Increased blur for transparency */}
+        <div className="absolute inset-0 backdrop-blur-[6px]" />
       </div>
 
-      {/* Floating Decorative Icons (Keep them for the "aerodynamic" feel) */}
+      {/* Floating Decorative Icons */}
       <motion.div
         className="absolute top-20 left-10 text-[#a3e635]/90 hidden sm:block"
         animate={{ y: [0, -15, 0] }}
@@ -109,22 +115,24 @@ export default function HeroSection() {
         <ShoppingBag size={46} strokeWidth={1.5} />
       </motion.div>
       
-      {/* Particle Aura (Unchanged) */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-10">
-        {particles.map((p, i) => (
-          <motion.span
-            key={i}
-            className="absolute rounded-full bg-[#bbf7d0]/70 blur-[1px]" // Reduced blur for sharper light
-            style={{ left: `${p.x}%`, top: `${p.y}%`, width: p.size, height: p.size }}
-            animate={{
-              x: [`${p.x - 1}%`, `${p.x + 1}%`, `${p.x - 1}%`],
-              y: [`${p.y - 1}%`, `${p.y + 1}%`, `${p.y - 1}%`],
-              opacity: [0.4, 1, 0.4],
-            }}
-            transition={{ duration: p.duration, repeat: Infinity, ease: "easeInOut", delay: p.delay }}
-          />
-        ))}
-      </div>
+      {/* Particle Aura - Only render after mounting */}
+      {mounted && (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-10">
+          {particles.map((p, i) => (
+            <motion.span
+              key={i}
+              className="absolute rounded-full bg-[#bbf7d0]/70 blur-[1px]"
+              style={{ left: `${p.x}%`, top: `${p.y}%`, width: p.size, height: p.size }}
+              animate={{
+                x: [`${p.x - 1}%`, `${p.x + 1}%`, `${p.x - 1}%`],
+                y: [`${p.y - 1}%`, `${p.y + 1}%`, `${p.y - 1}%`],
+                opacity: [0.4, 1, 0.4],
+              }}
+              transition={{ duration: p.duration, repeat: Infinity, ease: "easeInOut", delay: p.delay }}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Hero Content */}
       <motion.div
@@ -137,7 +145,7 @@ export default function HeroSection() {
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.9 }}
-          className="text-6xl md:text-7xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#22c55e] via-[#bbf7d0] to-[#facc15] drop-shadow-[0_0_20px_rgba(34,197,94,0.6)]" // Stronger drop shadow
+          className="text-6xl md:text-7xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#22c55e] via-[#bbf7d0] to-[#facc15] drop-shadow-[0_0_20px_rgba(34,197,94,0.6)]"
         >
           KUSH HIGH
         </motion.h1>
@@ -147,7 +155,7 @@ export default function HeroSection() {
         </p>
 
         <p className="mt-3 md:mt-5 text-xl md:text-2xl font-light text-[#fefce8]/90 leading-snug tracking-wide backdrop-blur-sm p-2 rounded-lg">
-          🌿 Nigeria’s premier legit cannabis & accessories plug. Fast, discreet, nationwide delivery. 🌿
+          🌿 Nigeria's premier legit cannabis & accessories plug. Fast, discreet, nationwide delivery. 🌿
         </p>
 
         {/* Floating CTA Buttons component is rendered here */}
@@ -157,7 +165,7 @@ export default function HeroSection() {
 
       {/* Soft fade bottom overlay */}
       <motion.div
-        className="absolute bottom-0 left-0 w-full h-[120px] bg-gradient-to-t from-black/80 to-transparent z-20" // Reduced height
+        className="absolute bottom-0 left-0 w-full h-[120px] bg-gradient-to-t from-black/80 to-transparent z-20"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
