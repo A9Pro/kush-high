@@ -108,7 +108,7 @@ export default function KushAIConsultation() {
     if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
       const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       const recognition = new SpeechRecognition();
-      recognition.continuous = true; // Changed to true for seamless ongoing recognition
+      recognition.continuous = false;
       recognition.interimResults = true;
       recognition.maxAlternatives = 1;
       recognition.lang = selectedLang.code;
@@ -121,15 +121,15 @@ export default function KushAIConsultation() {
           const transcript = result[0].transcript;
           if (result.isFinal) {
             if (confidence > CONFIDENCE_THRESHOLD) {
-              finalTranscript += transcript + ' '; // Add space for natural flow
+              finalTranscript += transcript;
             }
           } else {
             interimTranscript += transcript;
           }
         }
         if (finalTranscript) {
-          setInput((prev) => prev + finalTranscript.trim());
-          setInterim(''); // Clear interim when final is processed
+          setInput((prev) => prev + finalTranscript);
+          setInterim('');
         }
         if (interimTranscript) {
           setInterim(interimTranscript);
@@ -148,17 +148,11 @@ export default function KushAIConsultation() {
     }
   }, [selectedLang.code, CONFIDENCE_THRESHOLD]);
 
-  // Speech Synthesis setup - load voices and handle async loading
+  // Speech Synthesis setup - load voices
   useEffect(() => {
     if ('speechSynthesis' in window) {
-      const loadVoices = () => {
-        window.speechSynthesis.getVoices();
-      };
-      loadVoices();
-      window.speechSynthesis.addEventListener('voiceschanged', loadVoices);
-      return () => {
-        window.speechSynthesis.removeEventListener('voiceschanged', loadVoices);
-      };
+      // Trigger voice loading
+      window.speechSynthesis.getVoices();
     }
   }, []);
 
@@ -262,11 +256,10 @@ export default function KushAIConsultation() {
     utterance.rate = 0.9;
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
 
     utteranceRef.current = utterance;
     synth.speak(utterance);
+    setIsSpeaking(true);
   }, [ttsEnabled, getVoiceForLang]);
 
   const toggleTts = useCallback(() => {
@@ -317,7 +310,7 @@ export default function KushAIConsultation() {
     if (isListening) {
       recognitionRef.current?.stop();
     } else {
-      // Don't clear input to allow appending voice to typed text
+      setInput('');
       setInterim('');
       recognitionRef.current?.start();
       setIsListening(true);
@@ -327,13 +320,7 @@ export default function KushAIConsultation() {
   const sendMessage = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      // Stop listening if active to ensure clean final transcript
-      if (isListening) {
-        recognitionRef.current?.stop();
-        setIsListening(false);
-        setInterim('');
-      }
-      const userContent = input.trim();
+      const userContent = (input + interim).trim();
       if ((!userContent && !selectedImage) || isLoading) return;
 
       const userImageBase64 = selectedImage ? await new Promise<string>((resolve) => {
@@ -343,6 +330,7 @@ export default function KushAIConsultation() {
       }) : undefined;
 
       setInput("");
+      setInterim("");
       addMessage("user", userContent, userImageBase64);
       setSelectedImage(null);
       setImagePreview(null);
@@ -422,7 +410,7 @@ export default function KushAIConsultation() {
         inputRef.current?.focus();
       }
     },
-    [input, isLoading, selectedLang, addMessage, translate, speak, selectedImage, isListening]
+    [input, interim, isLoading, selectedLang, addMessage, translate, speak, selectedImage]
   );
 
   const clearChat = useCallback(() => {
@@ -449,6 +437,8 @@ export default function KushAIConsultation() {
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
+
+  const currentInput = input + interim;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-black to-zinc-900 text-white flex flex-col items-center justify-center p-2 sm:p-4 relative overflow-hidden">
@@ -591,39 +581,36 @@ export default function KushAIConsultation() {
                 </button>
               </div>
             )}
-            <div className="flex flex-1 flex-col gap-1 sm:gap-2 relative">
-              <div className="relative">
-                <input
-                  ref={inputRef}
-                  type="text"
-                  className="w-full bg-zinc-700/70 backdrop-blur-sm rounded-2xl px-3 sm:px-5 py-2 sm:py-3 outline-none text-white placeholder-zinc-400 border border-zinc-600/50 focus:border-green-500/50 transition-colors text-sm sm:text-base pr-12"
-                  placeholder={`Share your thoughts in ${selectedLang.name}... 🌿`}
-                  value={input} // Fixed: Only show final transcript in input
-                  onChange={(e) => setInput(e.target.value)}
-                  disabled={isLoading}
-                  aria-label="Type your message"
-                  autoComplete="off"
-                />
-                <button
-                  type="button"
-                  onClick={toggleVoiceInput}
-                  disabled={isLoading}
-                  className={`p-2 sm:p-3 rounded-2xl transition-colors flex items-center justify-center absolute right-1 top-1/2 -translate-y-1/2 ${
-                    isListening
-                      ? 'bg-red-500 hover:bg-red-600 text-white'
-                      : 'bg-zinc-700/70 hover:bg-zinc-600/70 text-zinc-400 hover:text-white'
-                  } disabled:opacity-50`}
-                  aria-label={isListening ? "Stop voice input" : "Start voice input"}
-                >
-                  <Mic className="w-4 h-4 sm:w-5 sm:h-5" />
-                </button>
-              </div>
-              {/* Improved: Show interim as a separate preview below input for better UX */}
-              {interim && (
-                <div className="px-3 sm:px-5 pt-1 text-zinc-500 text-xs sm:text-sm italic">
-                  Listening... {interim}
+            <div className="flex flex-1 gap-1 sm:gap-2 relative">
+              <input
+                ref={inputRef}
+                type="text"
+                className="flex-1 bg-zinc-700/70 backdrop-blur-sm rounded-2xl px-3 sm:px-5 py-2 sm:py-3 outline-none text-white placeholder-zinc-400 border border-zinc-600/50 focus:border-green-500/50 transition-colors text-sm sm:text-base pr-12"
+                placeholder={`Share your thoughts in ${selectedLang.name}... 🌿`}
+                value={currentInput}
+                onChange={(e) => setInput(e.target.value)}
+                disabled={isLoading}
+                aria-label="Type your message"
+                autoComplete="off"
+              />
+              {interim && !imagePreview && (
+                <div className="absolute inset-0 pointer-events-none flex items-center pl-3 sm:pl-5 text-zinc-500 text-sm italic">
+                  {interim}
                 </div>
               )}
+              <button
+                type="button"
+                onClick={toggleVoiceInput}
+                disabled={isLoading}
+                className={`p-2 sm:p-3 rounded-2xl transition-colors flex items-center justify-center absolute right-1 top-1/2 -translate-y-1/2 ${
+                  isListening
+                    ? 'bg-red-500 hover:bg-red-600 text-white'
+                    : 'bg-zinc-700/70 hover:bg-zinc-600/70 text-zinc-400 hover:text-white'
+                } disabled:opacity-50`}
+                aria-label={isListening ? "Stop voice input" : "Start voice input"}
+              >
+                <Mic className="w-4 h-4 sm:w-5 sm:h-5" />
+              </button>
             </div>
             <label className="flex items-center justify-center p-2 sm:p-3 bg-zinc-700/70 hover:bg-zinc-600/70 rounded-2xl text-zinc-400 hover:text-white transition-colors cursor-pointer disabled:opacity-50" htmlFor="gallery-upload">
               <ImagePlus className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -651,7 +638,7 @@ export default function KushAIConsultation() {
           </div>
           <button
             type="submit"
-            disabled={isLoading || (!input.trim() && !selectedImage)}
+            disabled={isLoading || (!currentInput.trim() && !selectedImage)}
             className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold rounded-2xl px-4 sm:px-6 py-2 sm:py-3 transition-all shadow-lg hover:shadow-xl flex items-center gap-2 disabled:from-gray-500 disabled:to-gray-600 min-w-[44px] sm:min-w-0"
             aria-label="Send message"
           >
