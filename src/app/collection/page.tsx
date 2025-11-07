@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Leaf, Droplet, CupSoda, Box } from "lucide-react";
+import { Sparkles, Leaf, Droplet, CupSoda, Box, ShoppingCart, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useCart } from "@/context/CartContext";
 
 // ✅ Define Product type
 interface Product {
@@ -12,7 +13,7 @@ interface Product {
   price: number;
   category: string;
   img: string;
-  desc?: string; // optional for some collections
+  desc?: string;
 }
 
 // 🌟 Base Collection
@@ -228,6 +229,10 @@ export default function CollectionPage() {
   const [particles, setParticles] = useState<
     { left: number; top: number; size: number }[]
   >([]);
+  const [addedItems, setAddedItems] = useState<Set<number>>(new Set());
+  
+  // Get cart functions from context
+  const { addToCart, items } = useCart();
 
   useEffect(() => {
     const generated = Array.from({ length: 30 }).map(() => ({
@@ -237,6 +242,34 @@ export default function CollectionPage() {
     }));
     setParticles(generated);
   }, []);
+
+  // Handle adding item to cart with feedback
+  const handleAddToCart = (product: Product) => {
+    addToCart({
+      id: product.id.toString(),
+      name: product.name,
+      price: product.price,
+      image: product.img,
+      quantity: 1,
+    });
+
+    // Show "Added" feedback
+    setAddedItems(prev => new Set(prev).add(product.id));
+    
+    // Remove feedback after 2 seconds
+    setTimeout(() => {
+      setAddedItems(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(product.id);
+        return newSet;
+      });
+    }, 2000);
+  };
+
+  // Check if item is already in cart
+  const isInCart = (productId: number) => {
+    return items.some(item => item.id === productId.toString());
+  };
 
   // ✅ Dynamic filter logic
   const filtered =
@@ -315,42 +348,71 @@ export default function CollectionPage() {
         className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
       >
         <AnimatePresence>
-          {filtered.map((product) => (
-            <motion.div
-              key={product.id}
-              layout
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5 }}
-              className="group relative rounded-3xl overflow-hidden shadow-xl border border-white/10 bg-white/5 hover:bg-white/10 backdrop-blur-lg"
-            >
-              {/* Image */}
-              <div
-                className="h-64 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-                style={{
-                  backgroundImage: `url(${product.img})`,
-                }}
-              />
-              {/* Details */}
-              <div className="p-6 text-center">
-                <h3 className="text-xl font-bold mb-2">{product.name}</h3>
-                <p className="text-[#bbf7d0] font-medium text-lg mb-3">
-                  ₦{product.price.toLocaleString()}
-                </p>
-
-                {product.desc && (
-                  <p className="text-sm text-gray-300 mb-4 line-clamp-3">
-                    {product.desc}
-                  </p>
+          {filtered.map((product) => {
+            const itemAdded = addedItems.has(product.id);
+            const inCart = isInCart(product.id);
+            
+            return (
+              <motion.div
+                key={product.id}
+                layout
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+                className="group relative rounded-3xl overflow-hidden shadow-xl border border-white/10 bg-white/5 hover:bg-white/10 backdrop-blur-lg"
+              >
+                {/* Image */}
+                <div
+                  className="h-64 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                  style={{
+                    backgroundImage: `url(${product.img})`,
+                  }}
+                />
+                
+                {/* In Cart Badge */}
+                {inCart && (
+                  <div className="absolute top-4 right-4 bg-[#22c55e] text-black px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                    <Check size={14} /> In Cart
+                  </div>
                 )}
 
-                <Button className="bg-[#22c55e] hover:bg-[#16a34a] text-black rounded-full px-6 py-2 transition-all">
-                  Add to Cart
-                </Button>
-              </div>
-            </motion.div>
-          ))}
+                {/* Details */}
+                <div className="p-6 text-center">
+                  <h3 className="text-xl font-bold mb-2">{product.name}</h3>
+                  <p className="text-[#bbf7d0] font-medium text-lg mb-3">
+                    ₦{product.price.toLocaleString()}
+                  </p>
+
+                  {product.desc && (
+                    <p className="text-sm text-gray-300 mb-4 line-clamp-3">
+                      {product.desc}
+                    </p>
+                  )}
+
+                  <Button
+                    onClick={() => handleAddToCart(product)}
+                    disabled={itemAdded}
+                    className={`w-full rounded-full px-6 py-2 transition-all flex items-center justify-center gap-2 ${
+                      itemAdded
+                        ? "bg-green-600 text-white"
+                        : "bg-[#22c55e] hover:bg-[#16a34a] text-black"
+                    }`}
+                  >
+                    {itemAdded ? (
+                      <>
+                        <Check size={18} /> Added!
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart size={18} /> Add to Cart
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </motion.div>
+            );
+          })}
         </AnimatePresence>
       </motion.div>
     </section>
