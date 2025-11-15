@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { ShoppingBag, Leaf, Package, Sparkles, Truck, Menu, Zap } from "lucide-react";
 
-// --- Configuration Data ---
 
 const images = [
   "/hero-bg1.jpg",
@@ -13,7 +12,6 @@ const images = [
   "/hero-bg4.jpg",
 ];
 
-// Function to generate particles (moved from module level)
 const generateParticles = () => {
   return Array.from({ length: 25 }).map(() => ({
     x: Math.random() * 100,
@@ -24,7 +22,6 @@ const generateParticles = () => {
   }));
 };
 
-// --- New Floating CTA Buttons Component ---
 
 const FloatingCTAButtons = () => {
   const buttonData = [
@@ -57,14 +54,12 @@ const FloatingCTAButtons = () => {
   );
 };
 
-// --- Main Component ---
 
 export default function HeroSection() {
   const [index, setIndex] = useState(0);
   const [particles, setParticles] = useState<Array<{ x: number; y: number; size: number; duration: number; delay: number }>>([]);
   const [mounted, setMounted] = useState(false);
 
-  // Generate particles only on client side after mount
   useEffect(() => {
     setParticles(generateParticles());
     setMounted(true);
@@ -155,7 +150,7 @@ export default function HeroSection() {
         </p>
 
         <p className="mt-3 md:mt-5 text-xl md:text-2xl font-light text-[#fefce8]/90 leading-snug tracking-wide backdrop-blur-sm p-2 rounded-lg">
-          🌿 Nigeria's premier legit cannabis & accessories plug. Fast, discreet, nationwide delivery. 🌿
+          🌿 Nigeria's premier cannabis & accessories plug. Fast, discreet, nationwide delivery. 🌿
         </p>
 
         {/* Floating CTA Buttons component is rendered here */}
